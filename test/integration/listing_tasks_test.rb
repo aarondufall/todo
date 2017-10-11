@@ -9,8 +9,8 @@ class ListingTasksTest < ActionDispatch::IntegrationTest
   end
 
   test '/tasks returns a list of all tasks' do
-    milk = Task.create!(name: "Remember the Milk")
-    wash = Task.create!(name: "Wash the Car")
+    milk = TaskModel.create!(name: "Remember the Milk")
+    wash = TaskModel.create!(name: "Wash the Car")
 
     get '/tasks'
 

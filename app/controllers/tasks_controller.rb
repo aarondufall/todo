@@ -1,10 +1,10 @@
 class TasksController < ApplicationController
   def index
-    @tasks = Task.all
+    @tasks = TaskModel.all
   end
 
   def create
-    @task = Task.new(task_create_params)
+    @task = TaskModel.new(task_create_params)
     if @task.save
       redirect_to tasks_path
     else
@@ -14,7 +14,7 @@ class TasksController < ApplicationController
   end
 
   def update
-    @task = Task.find(params[:id])
+    @task = TaskModel.find(params[:id])
     if @task.update(task_update_params)
       redirect_to tasks_path
     else
@@ -24,7 +24,7 @@ class TasksController < ApplicationController
   end
 
   def destroy
-    @task = Task.find(params[:id])
+    @task = TaskModel.find(params[:id])
     if @task.delete
       redirect_to tasks_path
     else

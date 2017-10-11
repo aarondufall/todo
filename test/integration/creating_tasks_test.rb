@@ -5,7 +5,7 @@ class CreatingTasksTest < ActionDispatch::IntegrationTest
     post tasks_path, name: "New Task"
     assert_redirected_to(tasks_path)
 
-    tasks = Task.all
+    tasks = TaskModel.all
     assert_equal(1, tasks.size)
     task = tasks.first
     assert_equal("New Task", task.name)
