@@ -4,6 +4,9 @@ class Task
       attr_reader :task_id
       attr_reader :name
 
+      dependency :clock, Clock::UTC
+      dependency :write, Messaging::Postgres::Write
+
       def initialize(task_id, name)
         @task_id = task_id
         @name = name
@@ -12,7 +15,10 @@ class Task
       def self.build(name, task_id: nil)
         task_id ||= Identifier::UUID::Random.get
 
-        new(task_id, name)
+        instance = new(task_id, name)
+        Clock::UTC.configure(instance)
+        Messaging::Postgres::Write.configure(instance)
+        instance
       end
 
       def self.call(name, task_id: nil)
@@ -21,18 +27,13 @@ class Task
       end
 
       def call
-        time = ::Time.now
-        time_iso8601 = time.iso8601
-
         added = Messages::Events::Added.new
 
         added.task_id = task_id
         added.name = name
-        added.time = time_iso8601
+        added.time = clock.iso8601
 
         stream_name = "task-#{task_id}"
-
-        write = Messaging::Postgres::Write.build
 
         write.initial(added, stream_name)
       end
