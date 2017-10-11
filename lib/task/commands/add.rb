@@ -5,6 +5,7 @@ class Task
       attr_reader :name
 
       dependency :clock, Clock::UTC
+      dependency :store, Task::Store
       dependency :write, Messaging::Postgres::Write
 
       def initialize(task_id, name)
@@ -17,6 +18,7 @@ class Task
 
         instance = new(task_id, name)
         Clock::UTC.configure(instance)
+        Store.configure(instance)
         Messaging::Postgres::Write.configure(instance)
         instance
       end
@@ -27,6 +29,10 @@ class Task
       end
 
       def call
+        task, version = store.get(task_id, include: :version)
+
+        return unless task.nil?
+
         added = Messages::Events::Added.new
 
         added.task_id = task_id
@@ -35,7 +41,7 @@ class Task
 
         stream_name = "task-#{task_id}"
 
-        write.initial(added, stream_name)
+        write.(added, stream_name, expected_version: version)
       end
     end
   end
