@@ -35,20 +35,11 @@ class TasksController < ApplicationController
   end
 
   def destroy
-    @task = TaskModel.find(params[:id])
-    if @task.delete
-      redirect_to tasks_path
-    else
-      flash[:error] = "Task deletion failed! #{print_errors(@task)}"
-      redirect_to tasks_path
-    end
-  end
+    task_id = params[:id]
 
-  def task_update_params
-    params.permit(:name, :completed_flag)
-  end
+    Task::Commands::Remove.(task_id: task_id)
 
-  def print_errors task
-    task.errors.full_messages.join(", ") + "."
+    flash[:notice] = "Task removed"
+    redirect_to tasks_path
   end
 end

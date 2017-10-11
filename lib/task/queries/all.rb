@@ -33,7 +33,7 @@ class Task
 
           task = store.fetch(task_id)
 
-          if task.deleted?
+          if task.removed?
             []
           else
             [task]
