@@ -5,11 +5,13 @@ describe "Task" do
     specify "Added" do
       entity = Task.new
 
-      task_id = '11111111-1111-4111-8111-111111111111'
-      name = 'Some Task'
+      task_id = Controls::ID.example
+      name = Controls::Task::Name.example
 
-      time = Time.new(2000, 1, 1, 11, 11, 11)
+      time = Controls::Time.example
       time_iso8601 = time.iso8601
+
+      added_time = Time.parse(time_iso8601)
 
       added = Task::Messages::Events::Added.new
 
