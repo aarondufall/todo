@@ -11,7 +11,7 @@ class Task
         @task_id = task_id
       end
 
-      def self.build(task_id: nil)
+      def self.build(task_id:)
         task_id ||= Identifier::UUID::Random.get
 
         instance = new(task_id)
@@ -21,7 +21,7 @@ class Task
         instance
       end
 
-      def self.call(task_id: nil)
+      def self.call(task_id:)
         instance = build(task_id: task_id)
         instance.()
       end

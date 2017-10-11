@@ -20,13 +20,18 @@ class TasksController < ApplicationController
   end
 
   def update
-    @task = TaskModel.find(params[:id])
-    if @task.update(task_update_params)
-      redirect_to tasks_path
+    task_id = params[:id]
+
+    if params[:completed_flag] == "true"
+      Task::Commands::Complete.(task_id: task_id)
+    elsif params[:completed_flag] == "false"
+      Task::Commands::MarkIncomplete.(task_id: task_id)
     else
-      flash[:error] = "Task failed to update! #{print_errors(@task)}"
-      redirect_to tasks_path
+      head :bad_request and return
     end
+
+    flash[:notice] = "Task updated successfully"
+    redirect_to tasks_path
   end
 
   def destroy

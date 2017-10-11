@@ -11,9 +11,7 @@ class Task
         @task_id = task_id
       end
 
-      def self.build(task_id: nil)
-        task_id ||= Identifier::UUID::Random.get
-
+      def self.build(task_id:)
         instance = new(task_id)
         Clock::UTC.configure(instance)
         Store.configure(instance)
@@ -21,7 +19,7 @@ class Task
         instance
       end
 
-      def self.call(task_id: nil)
+      def self.call(task_id:)
         instance = build(task_id: task_id)
         instance.()
       end
