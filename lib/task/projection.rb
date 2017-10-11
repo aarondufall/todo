@@ -24,5 +24,12 @@ class Task
     apply Messages::Events::MarkedIncomplete do |marked_incomplete|
       task.mark_incomplete
     end
+
+    apply Messages::Events::Removed do |removed|
+      removed_time_iso8601 = removed.time
+      removed_time = Time.parse(removed_time_iso8601)
+
+      task.remove(removed_time)
+    end
   end
 end

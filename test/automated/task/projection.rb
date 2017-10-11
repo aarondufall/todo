@@ -42,5 +42,17 @@ describe "Task" do
 
       assert(entity.completed_time.nil?)
     end
+
+    specify "Removed" do
+      entity = Task.new
+
+      removed = Controls::Task::Events::Removed.example
+
+      Task::Projection.(entity, removed)
+
+      time = Time.parse(removed.time) or fail
+
+      assert(entity.removed_time == time)
+    end
   end
 end

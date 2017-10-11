@@ -34,6 +34,17 @@ module Controls
           marked_incomplete
         end
       end
+
+      module Removed
+        def self.example
+          removed = ::Task::Messages::Events::Removed.new
+
+          removed.task_id = Controls::ID.example
+          removed.time = Controls::Time::ISO8601.example
+
+          removed
+        end
+      end
     end
   end
 end
