@@ -8,6 +8,13 @@ class Task
         attribute :name, String
         attribute :time, String
       end
+
+      class Completed
+        include Messaging::Message
+
+        attribute :task_id, String
+        attribute :time, String
+      end
     end
   end
 end

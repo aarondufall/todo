@@ -13,5 +13,12 @@ class Task
 
       task.added_time = added_time
     end
+
+    apply Messages::Events::Completed do |completed|
+      completed_time_iso8601 = completed.time
+      completed_time = Time.parse(completed_time_iso8601)
+
+      task.completed_time = completed_time
+    end
   end
 end

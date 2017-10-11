@@ -12,6 +12,17 @@ module Controls
           added
         end
       end
+
+      module Completed
+        def self.example
+          completed = ::Task::Messages::Events::Completed.new
+
+          completed.task_id = Controls::ID.example
+          completed.time = Controls::Time::ISO8601.example
+
+          completed
+        end
+      end
     end
   end
 end

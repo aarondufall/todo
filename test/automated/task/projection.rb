@@ -17,5 +17,17 @@ describe "Task" do
       assert(entity.name == name)
       assert(entity.added_time == time)
     end
+
+    specify "Completed" do
+      entity = Task.new
+
+      completed = Controls::Task::Events::Completed.example
+
+      Task::Projection.(entity, completed)
+
+      time = Time.parse(completed.time) or fail
+
+      assert(entity.completed_time == time)
+    end
   end
 end
