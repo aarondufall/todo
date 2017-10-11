@@ -42,6 +42,8 @@ class Task
         stream_name = "task-#{task_id}"
 
         write.(added, stream_name, expected_version: version)
+
+        added
       end
     end
   end

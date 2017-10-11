@@ -4,13 +4,19 @@ class TasksController < ApplicationController
   end
 
   def create
-    @task = TaskModel.new(task_create_params)
-    if @task.save
-      redirect_to tasks_path
-    else
-      flash[:error] = "Task creation failed! #{print_errors(@task)}"
-      redirect_to tasks_path
+    name = params[:name]
+
+    if name.nil? || name == ''
+      flash[:error] = "Task creation failed! Name not specified"
+      redirect_to tasks_path and return
     end
+
+    task_id = Identifier::UUID::Random.get
+
+    Task::Commands::Add.(name, task_id: task_id)
+
+    flash[:notice] = "Task added successfully"
+    redirect_to tasks_path
   end
 
   def update
@@ -31,10 +37,6 @@ class TasksController < ApplicationController
       flash[:error] = "Task deletion failed! #{print_errors(@task)}"
       redirect_to tasks_path
     end
-  end
-
-  def task_create_params
-    params.permit(:name)
   end
 
   def task_update_params
