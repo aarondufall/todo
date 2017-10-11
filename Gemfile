@@ -2,6 +2,8 @@ source 'https://rubygems.org'
 
 gem 'rails', '~> 4.2'
 
+gem 'eventide-postgres'
+
 gem 'bootstrap-sass'
 gem 'jbuilder', '~> 2.0'
 gem 'jquery-rails'
