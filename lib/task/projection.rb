@@ -20,5 +20,9 @@ class Task
 
       task.completed_time = completed_time
     end
+
+    apply Messages::Events::MarkedIncomplete do |marked_incomplete|
+      task.completed_time = nil
+    end
   end
 end

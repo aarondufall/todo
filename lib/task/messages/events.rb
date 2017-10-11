@@ -15,6 +15,13 @@ class Task
         attribute :task_id, String
         attribute :time, String
       end
+
+      class MarkedIncomplete
+        include Messaging::Message
+
+        attribute :task_id, String
+        attribute :time, String
+      end
     end
   end
 end

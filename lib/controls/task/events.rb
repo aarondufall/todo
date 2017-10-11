@@ -23,6 +23,17 @@ module Controls
           completed
         end
       end
+
+      module MarkedIncomplete
+        def self.example
+          marked_incomplete = ::Task::Messages::Events::MarkedIncomplete.new
+
+          marked_incomplete.task_id = Controls::ID.example
+          marked_incomplete.time = Controls::Time::ISO8601.example
+
+          marked_incomplete
+        end
+      end
     end
   end
 end

@@ -29,5 +29,18 @@ describe "Task" do
 
       assert(entity.completed_time == time)
     end
+
+    specify "MarkedIncomplete" do
+      entity = Task.new
+      entity.completed_time = Controls::Time.example
+
+      marked_incomplete = Controls::Task::Events::MarkedIncomplete.example
+
+      Task::Projection.(entity, marked_incomplete)
+
+      time = Time.parse(marked_incomplete.time) or fail
+
+      assert(entity.completed_time.nil?)
+    end
   end
 end
