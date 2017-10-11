@@ -18,11 +18,11 @@ class Task
       completed_time_iso8601 = completed.time
       completed_time = Time.parse(completed_time_iso8601)
 
-      task.completed_time = completed_time
+      task.complete(completed_time)
     end
 
     apply Messages::Events::MarkedIncomplete do |marked_incomplete|
-      task.completed_time = nil
+      task.mark_incomplete
     end
   end
 end
