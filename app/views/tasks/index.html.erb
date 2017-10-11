@@ -9,7 +9,7 @@
   <% end %>
   <ul class="list-group" id="tasks">
     <% @tasks.each do |task| %>
-      <% if task.completed_flag %>
+      <% if task.completed? %>
         <li class='list-group-item task-item completed' id="task_<%= task.id %>">
           <%= link_to("Mark Incomplete",
             task_path(id: task.id, completed_flag: false),

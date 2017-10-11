@@ -1,6 +1,6 @@
 class TasksController < ApplicationController
   def index
-    @tasks = TaskModel.all
+    @tasks = Task::Queries::All.()
   end
 
   def create
