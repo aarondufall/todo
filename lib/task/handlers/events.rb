@@ -40,6 +40,73 @@ class Task
         write.(create_command, stream_name)
       end
 
+      handle Completed do |completed|
+        task_id = completed.task_id
+
+        stream_name = stream_name(task_id)
+
+        if current?(completed)
+          Rails.logger.info { "Ignored completed event (Task ID: #{task_id})" }
+          return
+        end
+
+        update_command = ViewData::Commands::Update.follow(completed, strict: false)
+
+        update_command.identifier = task_id
+
+        update_command.name = 'tasks'
+
+        update_command.data = {
+          :completed_flag => true,
+          :updated_at => completed.time
+        }
+
+        write.(update_command, stream_name)
+      end
+
+      handle MarkedIncomplete do |marked_incomplete|
+        task_id = marked_incomplete.task_id
+
+        stream_name = stream_name(task_id)
+
+        if current?(marked_incomplete)
+          Rails.logger.info { "Ignored marked incomplete event (Task ID: #{task_id})" }
+          return
+        end
+
+        update_command = ViewData::Commands::Update.follow(marked_incomplete, strict: false)
+
+        update_command.identifier = task_id
+
+        update_command.name = 'tasks'
+
+        update_command.data = {
+          :completed_flag => false,
+          :updated_at => marked_incomplete.time
+        }
+
+        write.(update_command, stream_name)
+      end
+
+      handle Removed do |removed|
+        task_id = removed.task_id
+
+        stream_name = stream_name(task_id)
+
+        if current?(removed)
+          Rails.logger.info { "Ignored removed event (Task ID: #{task_id})" }
+          return
+        end
+
+        update_command = ViewData::Commands::Delete.follow(removed, strict: false)
+
+        update_command.identifier = task_id
+
+        update_command.name = 'tasks'
+
+        write.(update_command, stream_name)
+      end
+
       def current?(event)
         task_id = event.task_id
 
