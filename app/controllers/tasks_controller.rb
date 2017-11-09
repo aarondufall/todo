@@ -1,6 +1,6 @@
 class TasksController < ApplicationController
   def index
-    @tasks = Task::Queries::All.()
+    @tasks = TaskModel.order('created_at ASC').all
   end
 
   def create

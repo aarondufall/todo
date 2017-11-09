@@ -1,0 +1,11 @@
+#!/usr/bin/env ruby
+
+ENV['LOG_TAGS'] ||= '_untagged,write,handle,-message_store,-data'
+
+require_relative '../config/environment'
+
+require 'component_host'
+
+ComponentHost.start 'rails-todo-consumers' do |host|
+  host.register ::Task::Start
+end
