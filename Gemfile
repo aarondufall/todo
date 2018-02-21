@@ -17,6 +17,7 @@ gem 'therubyracer',  platforms: :ruby
 gem 'turbolinks'
 gem 'uglifier', '>= 1.3.0'
 gem 'unicorn'
+gem 'pg', '~> 0.18'
 
 group :test do
   gem 'minitest-reporters'

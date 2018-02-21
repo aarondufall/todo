@@ -15,3 +15,43 @@
 //= require turbolinks
 //= require bootstrap
 //= require_tree .
+
+
+$(document).ready(function() {
+    $('#name').focus();
+    convertFormToAjaxSubmit();
+});
+
+function convertFormToAjaxSubmit() {
+    $('form').submit(function() {
+        var since = new Date().toUTCString();
+        var valuesToSubmit = $(this).serialize();
+        $.ajax({
+            type: "POST",
+            url: $(this).attr('action'),
+            data: valuesToSubmit,
+            dataType: "JSON"
+        }).success(function(res, status, xhr){
+            pollForList(xhr.getResponseHeader("Location"), since);
+        });
+        return false;
+    });
+}
+
+function pollForList(location, since) {
+    $.ajax({
+        url: location,
+        type: "GET",
+        headers: {"If-Modified-Since": since},
+        contentType: 'application/json; charset=utf-8',
+        success: function(res, status, xhr) {
+            if (xhr.status === 200) {
+                $("div#tasks_list").html(res.html);
+                $('#name').val('');
+                $('#name').focus();
+            } else {
+                pollForList(location, since);
+            }
+        }
+    });
+}

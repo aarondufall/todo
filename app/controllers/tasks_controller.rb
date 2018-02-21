@@ -16,7 +16,29 @@ class TasksController < ApplicationController
     Task::Commands::Add.(name, task_id: task_id)
 
     flash[:notice] = "Task added successfully"
-    redirect_to tasks_path
+    response.headers["Location"] = url_for(root_url + "tasks/list")
+    render json: {}.to_json, status: 201
+  end
+
+  def list
+    @tasks = TaskModel.order('created_at ASC').all
+
+    if @tasks.length == 0
+      render json:@tasks, status: 304
+    else
+      Time.zone = "UTC"
+      lastTimeStamp = Time.zone.parse(@tasks.last.created_at.to_s)
+      modifiedSince = Time.zone.parse(request.headers['If-Modified-Since'])
+
+      if modifiedSince <= lastTimeStamp
+        result = render_to_string 'tasks/_list', locals: {tasks: @tasks}, layout: false
+        render json: {
+            'html' => result
+        }, status: 200
+      else
+        render json:{}, status: 304
+      end
+    end
   end
 
   def update
