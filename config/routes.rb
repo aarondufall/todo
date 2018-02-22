@@ -15,8 +15,6 @@ Rails.application.routes.draw do
   #   resources :products
   resources :tasks, only: [:index, :create, :update, :destroy]
 
-  get 'tasks/list' => 'tasks#list'
-
   # Example resource route with options:
   #   resources :products do
   #     member do

@@ -1,6 +1,27 @@
 class TasksController < ApplicationController
   def index
     @tasks = TaskModel.order('created_at ASC').all
+
+    request_type = request.headers['X-Requested-With'] ? request.headers['X-Requested-With'] : ""
+
+    if ("xmlhttprequest".casecmp(request_type) == 0)
+      if @tasks.length == 0
+        render json:@tasks, status: 304
+      else
+        Time.zone = "UTC"
+        last_time_stamp = Time.zone.parse(@tasks.last.created_at.to_s)
+        modified_since = Time.zone.parse(request.headers['If-Modified-Since'])
+
+        if modified_since <= last_time_stamp
+          result = render_to_string 'tasks/_list', locals: {tasks: @tasks}, layout: false
+          render json: {
+              'html' => result
+          }, status: 200
+        else
+          render json:{}, status: 304
+        end
+      end
+    end
   end
 
   def create
@@ -16,29 +37,8 @@ class TasksController < ApplicationController
     Task::Commands::Add.(name, task_id: task_id)
 
     flash[:notice] = "Task added successfully"
-    response.headers["Location"] = url_for(root_url + "tasks/list")
+    response.headers["Location"] = tasks_path
     render json: {}.to_json, status: 201
-  end
-
-  def list
-    @tasks = TaskModel.order('created_at ASC').all
-
-    if @tasks.length == 0
-      render json:@tasks, status: 304
-    else
-      Time.zone = "UTC"
-      lastTimeStamp = Time.zone.parse(@tasks.last.created_at.to_s)
-      modifiedSince = Time.zone.parse(request.headers['If-Modified-Since'])
-
-      if modifiedSince <= lastTimeStamp
-        result = render_to_string 'tasks/_list', locals: {tasks: @tasks}, layout: false
-        render json: {
-            'html' => result
-        }, status: 200
-      else
-        render json:{}, status: 304
-      end
-    end
   end
 
   def update
