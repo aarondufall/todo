@@ -2,15 +2,14 @@ class TasksController < ApplicationController
   def index
     @tasks = TaskModel.order('created_at ASC').all
 
-    request_type = request.headers['X-Requested-With'] ? request.headers['X-Requested-With'] : ""
-
-    if ("xmlhttprequest".casecmp(request_type) == 0)
+    if request.xhr?
       if @tasks.length == 0
         render json:@tasks, status: 304
       else
         Time.zone = "UTC"
         last_time_stamp = Time.zone.parse(@tasks.last.created_at.to_s)
-        modified_since = Time.zone.parse(request.headers['If-Modified-Since'])
+        if_modified_since = request.headers['If-Modified-Since'] ? request.headers['If-Modified-Since'] : Date.new.to_s
+        modified_since = Time.zone.parse(if_modified_since)
 
         if modified_since <= last_time_stamp
           result = render_to_string 'tasks/_list', locals: {tasks: @tasks}, layout: false
