@@ -17,9 +17,9 @@ class TasksController < ApplicationController
             layout: false
           )
 
-          render json: { 'html' => html }, status: 200
+          render text: html, status: 200
         else
-          render json: {}, status: 304
+          head 304
         end
       end
     end
@@ -39,7 +39,8 @@ class TasksController < ApplicationController
 
     flash[:notice] = "Task added successfully"
     response.headers["Location"] = tasks_path
-    render json: {}.to_json, status: 201
+
+    head status: 201
   end
 
   def update

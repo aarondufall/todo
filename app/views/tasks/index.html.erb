@@ -16,11 +16,11 @@
     </div>
   <% end %>
   <ul class="list-group" id="tasks">
-    <div id="tasks_list">
+    <div id="tasks">
       <%= render "tasks/list" %>
     </div>
     <li class='list-group-item' id="new-task-form">
-      <%= form_tag("/tasks", method: "post") do %>
+      <%= form_tag("/tasks", id: "add-task", method: "post", remote: true) do %>
         <%= submit_tag("Add New Task", class: "btn btn-sm btn-primary") %>
         <%= text_field_tag(:name) %>
       <% end %>

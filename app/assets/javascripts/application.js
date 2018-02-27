@@ -18,41 +18,41 @@
 
 
 $(document).ready(function() {
-    $('#name').focus();
+  $('#name').focus();
 
-    convertFormToAjaxSubmit();
+  var submitTime;
+
+  $("form#add-task")
+    .on("ajax:before", function() {
+      submitTime = new Date();
+    })
+
+    .on("ajax:success", function(e, body, status, xhr) {
+      var location = xhr.getResponseHeader("Location");
+
+      console.log("getting list | " + location + " | " + submitTime.toISOString());
+      getList(location, submitTime, function(list) {
+        $("#tasks").html(list);
+
+        $("form#add-task").find("input[name=name]")
+          .val("")
+          .focus();
+      });
+    });
 });
 
-function convertFormToAjaxSubmit() {
-    $('form').submit(function() {
-        var since = new Date().toISOString();
-        var valuesToSubmit = $(this).serialize();
-        $.ajax({
-            type: "POST",
-            url: $(this).attr('action'),
-            data: valuesToSubmit,
-            dataType: "JSON"
-        }).success(function(res, status, xhr){
-            pollForList(xhr.getResponseHeader("Location"), since);
-        });
-        return false;
-    });
-}
-
-function pollForList(location, since) {
-    $.ajax({
-        url: location,
-        type: "GET",
-        headers: {"If-Modified-Since": since},
-        contentType: 'application/json; charset=utf-8',
-        success: function(res, status, xhr) {
-            if (xhr.status === 200) {
-                $("div#tasks_list").html(res.html);
-                $('#name').val('');
-                $('#name').focus();
-            } else {
-                pollForList(location, since);
-            }
-        }
-    });
+function getList(location, ifModifiedSince, callback) {
+  $.ajax({
+    url: location,
+    type: "GET",
+    headers: { "If-Modified-Since": ifModifiedSince.toISOString() },
+    contentType: 'application/json; charset=utf-8',
+    success: function(body, status, xhr) {
+      if (xhr.status === 200) {
+        callback(body);
+      } else {
+        getList(location, ifModifiedSince, callback);
+      }
+    }
+  });
 }
