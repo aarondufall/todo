@@ -4,20 +4,22 @@ class TasksController < ApplicationController
 
     if request.xhr?
       if @tasks.length == 0
-        render json:@tasks, status: 304
-      else
-        Time.zone = "UTC"
-        last_time_stamp = Time.zone.parse(@tasks.last.created_at.to_s)
-        if_modified_since = request.headers['If-Modified-Since'] ? request.headers['If-Modified-Since'] : Date.new.to_s
-        modified_since = Time.zone.parse(if_modified_since)
+        render json: @tasks, status: 304
+      elsif cache_constraint = request.headers['If-Modified-Since']
+        latest_task = @tasks.max_by(&:updated_at)
 
-        if modified_since <= last_time_stamp
-          result = render_to_string 'tasks/_list', locals: {tasks: @tasks}, layout: false
-          render json: {
-              'html' => result
-          }, status: 200
+        cache_constraint = Time.parse(cache_constraint)
+
+        if cache_constraint <= latest_task.updated_at
+          html = render_to_string(
+            'tasks/_list',
+            locals: { tasks: @tasks },
+            layout: false
+          )
+
+          render json: { 'html' => html }, status: 200
         else
-          render json:{}, status: 304
+          render json: {}, status: 304
         end
       end
     end

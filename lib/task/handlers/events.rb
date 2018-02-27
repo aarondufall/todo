@@ -34,7 +34,8 @@ class Task
 
         create_command.data = {
           :name => added.name,
-          :created_at => added.time
+          :created_at => added.time,
+          :updated_at => added.time
         }
 
         write.(create_command, stream_name)

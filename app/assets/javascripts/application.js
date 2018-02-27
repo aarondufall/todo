@@ -19,12 +19,13 @@
 
 $(document).ready(function() {
     $('#name').focus();
+
     convertFormToAjaxSubmit();
 });
 
 function convertFormToAjaxSubmit() {
     $('form').submit(function() {
-        var since = new Date().toUTCString();
+        var since = new Date().toISOString();
         var valuesToSubmit = $(this).serialize();
         $.ajax({
             type: "POST",
